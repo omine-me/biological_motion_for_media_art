@@ -1,128 +1,90 @@
-// import DeviceDetector from "https://cdn.skypack.dev/device-detector-js@2.2.10";
-// // Usage: testSupport({client?: string, os?: string}[])
-// // Client and os are regular expressions.
-// // See: https://cdn.jsdelivr.net/npm/device-detector-js@2.2.10/README.md for
-// // legal values for client and os
-// testSupport([
-//     { client: 'Chrome' },
-// ]);
-// function testSupport(supportedDevices) {
-//     const deviceDetector = new DeviceDetector();
-//     const detectedDevice = deviceDetector.parse(navigator.userAgent);
-//     let isSupported = false;
-//     for (const device of supportedDevices) {
-//         if (device.client !== undefined) {
-//             const re = new RegExp(`^${device.client}$`);
-//             if (!re.test(detectedDevice.client.name)) {
-//                 continue;
-//             }
-//         }
-//         if (device.os !== undefined) {
-//             const re = new RegExp(`^${device.os}$`);
-//             if (!re.test(detectedDevice.os.name)) {
-//                 continue;
-//             }
-//         }
-//         isSupported = true;
-//         break;
-//     }
-//     if (!isSupported) {
-//         alert(`This demo, running on ${detectedDevice.client.name}/${detectedDevice.os.name}, ` +
-//             `is not well supported at this time, expect some flakiness while we improve our code.`);
-//     }
-// }
 const controls = window;
-const LandmarkGrid = window.LandmarkGrid;
-const drawingUtils = window;
-const mpPose = window;
-const options = {
-    locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose@${mpPose.VERSION}/${file}`;
-    }
-};
-// Our input frames will come from here.
 const videoElement = document.getElementsByClassName('input_video')[0];
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
 const controlsElement = document.getElementsByClassName('control-panel')[0];
 const canvasCtx = canvasElement.getContext('2d');
-// We'll add this to our control panel later, but we'll save it here so we can
-// call tick() each time the graph runs.
-const fpsControl = new controls.FPS();
-// Optimization: Turn off animated spinner after its hiding animation is done.
-const spinner = document.querySelector('.loading');
-spinner.ontransitionend = () => {
-    spinner.style.display = 'none';
-};
 // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
-// const grid = new LandmarkGrid(landmarkContainer, {
-//     connectionColor: 0xCCCCCC,
-//     definedColors: [{ name: 'LEFT', value: 0xffa500 }, { name: 'RIGHT', value: 0x00ffff }],
-//     range: 2,
-//     fitToGrid: true,
-//     labelSuffix: 'm',
-//     landmarkSize: 2,
-//     numCellsPerAxis: 4,
-//     showHidden: false,
-//     centered: true,
-// });
-let activeEffect = 'mask';
-function onResults(results) {
-    // Hide the spinner.
-    document.body.classList.add('loaded');
-    // Update the frame rate.
-    fpsControl.tick();
-    // Draw the overlays.
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    if (results.segmentationMask) {
-        canvasCtx.drawImage(results.segmentationMask, 0, 0, canvasElement.width, canvasElement.height);
-        // Only overwrite existing pixels.
-        if (activeEffect === 'mask' || activeEffect === 'both') {
-            canvasCtx.globalCompositeOperation = 'source-in';
-            // This can be a color or a texture or whatever...
-            canvasCtx.fillStyle = '#00FF007F';
-            canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-        }
-        else {
-            canvasCtx.globalCompositeOperation = 'source-out';
-            canvasCtx.fillStyle = '#0000FF7F';
-            canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-        }
-        // Only overwrite missing pixels.
-        canvasCtx.globalCompositeOperation = 'destination-atop';
-        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-        canvasCtx.globalCompositeOperation = 'source-over';
-    }
-    else {
-        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-    }
-    if (results.poseLandmarks) {
-        drawingUtils.drawConnectors(canvasCtx, results.poseLandmarks, mpPose.POSE_CONNECTIONS, { visibilityMin: 0.65, color: 'white' });
-        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_LEFT)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.65, color: 'white', fillColor: 'rgb(255,138,0)' });
-        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_RIGHT)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.65, color: 'white', fillColor: 'rgb(0,217,231)' });
-        drawingUtils.drawLandmarks(canvasCtx, Object.values(mpPose.POSE_LANDMARKS_NEUTRAL)
-            .map(index => results.poseLandmarks[index]), { visibilityMin: 0.65, color: 'white', fillColor: 'white' });
-    }
-    canvasCtx.restore();
-//     if (results.poseWorldLandmarks) {
-//         grid.updateLandmarks(results.poseWorldLandmarks, mpPose.POSE_CONNECTIONS, [
-//             { list: Object.values(mpPose.POSE_LANDMARKS_LEFT), color: 'LEFT' },
-//             { list: Object.values(mpPose.POSE_LANDMARKS_RIGHT), color: 'RIGHT' },
-//         ]);
-//     }
-//     else {
-//         grid.updateLandmarks([]);
-//     }
+// const grid = new LandmarkGrid(landmarkContainer);
+let isVideoOn = true;
+
+function toggleVideo() {
+    isVideoOn = !isVideoOn;
 }
-const pose = new mpPose.Pose(options);
+
+function onResults(results) {
+//   if (!results.poseLandmarks) {
+//     grid.updateLandmarks([]);
+//     return;
+//   }
+
+  // we use only these landmarks: 0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28
+  // https://google.github.io/mediapipe/solutions/pose.html#pose-landmark-model-blazepose-ghum-3d
+
+  canvasCtx.save();
+  canvasCtx.fillStyle = '#000000';
+  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+  // Only overwrite existing pixels.
+  // 背景色
+  canvasCtx.globalCompositeOperation = 'source-over';
+  canvasCtx.fillStyle = '#000000';
+  canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+
+  // Only overwrite missing pixels.
+  // カメラ画像
+  if (isVideoOn){
+    canvasCtx.globalCompositeOperation = 'source-over';
+    canvasCtx.drawImage(
+        results.image, 0, 0, canvasElement.width, canvasElement.height);
+  }
+
+  canvasCtx.globalCompositeOperation = 'source-over';
+//   drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+//                  {color: '#0000FF', lineWidth: 4});
+  const selectedLandmarks = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]
+  if (results.poseLandmarks){
+  results.poseLandmarks.forEach((lm, idx) => {
+    if (!selectedLandmarks.includes(idx)){
+        results.poseLandmarks[idx] = {x: -10., y: -10., z: -0, visibility: 0.}
+    }
+  }
+  )}
+
+
+//   results.poseLandmarks
+  drawLandmarks(canvasCtx, results.poseLandmarks,
+                {color: '#FFF', lineWidth: 5});
+  canvasCtx.restore();
+
+//   grid.updateLandmarks(results.poseWorldLandmarks);
+}
+
+const pose = new Pose({locateFile: (file) => {
+  return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+}});
+pose.setOptions({
+  modelComplexity: 1,
+  smoothLandmarks: true,
+  enableSegmentation: false,
+  smoothSegmentation: false,
+  minDetectionConfidence: 0.5,
+  minTrackingConfidence: 0.5
+});
 pose.onResults(onResults);
-// Present a control panel through which the user can manipulate the solution
-// options.
+
+const camera = new Camera(videoElement, {
+  onFrame: async () => {
+    await pose.send({image: videoElement});
+  },
+  width: 1280,
+  height: 720
+});
+camera.start();
+
+
 new controls
     .ControlPanel(controlsElement, {
-    selfieMode: true,
+    selfieMode: false,
     modelComplexity: 1,
     smoothLandmarks: true,
     enableSegmentation: false,
@@ -132,8 +94,6 @@ new controls
     effect: 'background',
 })
     .add([
-    new controls.StaticText({ title: 'MediaPipe Pose' }),
-    fpsControl,
     new controls.Toggle({ title: 'Selfie Mode', field: 'selfieMode' }),
     new controls.SourcePicker({
         onSourceChanged: () => {
@@ -163,8 +123,6 @@ new controls
         discrete: ['Lite', 'Full', 'Heavy'],
     }),
     new controls.Toggle({ title: 'Smooth Landmarks', field: 'smoothLandmarks' }),
-    new controls.Toggle({ title: 'Enable Segmentation', field: 'enableSegmentation' }),
-    new controls.Toggle({ title: 'Smooth Segmentation', field: 'smoothSegmentation' }),
     new controls.Slider({
         title: 'Min Detection Confidence',
         field: 'minDetectionConfidence',
@@ -176,11 +134,6 @@ new controls
         field: 'minTrackingConfidence',
         range: [0, 1],
         step: 0.01
-    }),
-    new controls.Slider({
-        title: 'Effect',
-        field: 'effect',
-        discrete: { 'background': 'Background', 'mask': 'Foreground' },
     }),
 ])
     .on(x => {
