@@ -6,9 +6,14 @@ const canvasCtx = canvasElement.getContext('2d');
 // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
 // const grid = new LandmarkGrid(landmarkContainer);
 let isVideoOn = true;
+let areConnectorsVisible = true;
 
 function toggleVideo() {
     isVideoOn = !isVideoOn;
+}
+
+function toggleConnector() {
+    areConnectorsVisible = !areConnectorsVisible;
 }
 
 function onResults(results) {
@@ -38,9 +43,6 @@ function onResults(results) {
         results.image, 0, 0, canvasElement.width, canvasElement.height);
   }
 
-  canvasCtx.globalCompositeOperation = 'source-over';
-//   drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-//                  {color: '#0000FF', lineWidth: 4});
   const selectedLandmarks = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]
   if (results.poseLandmarks){
   results.poseLandmarks.forEach((lm, idx) => {
@@ -49,8 +51,11 @@ function onResults(results) {
     }
   }
   )}
-
-
+  
+    canvasCtx.globalCompositeOperation = 'source-over';
+  if (areConnectorsVisible){
+      drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#0000FF', lineWidth: 3});  
+  }
 //   results.poseLandmarks
   drawLandmarks(canvasCtx, results.poseLandmarks,
                 {color: '#FFF', lineWidth: 5});
