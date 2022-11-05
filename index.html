@@ -13,11 +13,41 @@
 <body>
   <div class="container">
     <video class="input_video" style="display: none;"></video>
-    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    <canvas class="output_canvas" width="1280px" height="720px" style="border:3px solid"></canvas>
     <!-- <div class="landmark-grid-container"></div> -->
   </div>
-  <input type="checkbox" id="isVideoOn" onchange="toggleVideo()" checked ><label for="isVideoOn">Is video on</label>
-  <input type="checkbox" id="areConnectorsVisible" onchange="toggleConnector()" checked ><label for="areConnectorsVisible">Are Connectors Visible</label>
+  <input type="checkbox" id="isVideoOn" onchange="toggleVideo()" checked ><label for="isVideoOn">Is video on / ビデオオン</label>
+  <input type="checkbox" id="areConnectorsVisible" onchange="toggleConnector()" ><label for="areConnectorsVisible">Are Connectors Visible / ラインを表示</label>
+  <br>
+  <p>point visibility / 点の表示</p>
+  <input type="checkbox" id="head" onchange="toggleLandmark(0)" checked><label for="head">head</label>
+  <br>
+
+  <input type="checkbox" id="left_wrist" onchange="toggleLandmark(15)" checked><label for="left_wrist">left_wrist</label>
+  <input type="checkbox" id="left_elbow" onchange="toggleLandmark(13)" checked><label for="left_elbow">left_elbow</label>
+  <input type="checkbox" id="left_shoulder" onchange="toggleLandmark(11)" checked><label for="left_shoulder">left_shoulder</label>
+
+  <input type="checkbox" id="right_shoulder" onchange="toggleLandmark(12)" checked><label for="right_shoulder">right_shoulder</label>
+  <input type="checkbox" id="right_elbow" onchange="toggleLandmark(14)" checked><label for="right_elbow">right_elbow</label>
+  <input type="checkbox" id="right_wrist" onchange="toggleLandmark(16)" checked><label for="right_wrist">right_wrist</label>
+  <br>
+  
+  <input type="checkbox" id="left_hip" onchange="toggleLandmark(23)" checked><label for="left_hip">left_hip</label>
+  <input type="checkbox" id="right_hip" onchange="toggleLandmark(24)" checked><label for="right_hip">right_hip</label>
+  <br>
+
+  <input type="checkbox" id="left_knee" onchange="toggleLandmark(25)" checked><label for="left_knee">left_knee</label>
+  <input type="checkbox" id="right_knee" onchange="toggleLandmark(26)" checked><label for="right_knee">right_knee</label>
+  <br>
+
+  <input type="checkbox" id="left_ankle" onchange="toggleLandmark(27)" checked><label for="left_ankle">left_ankle</label>
+  <input type="checkbox" id="right_ankle" onchange="toggleLandmark(28)" checked><label for="right_ankle">right_ankle</label>
+  <br>
+
+
+  
+  <br>
+  <p>⚠Advanced Setting⚠</p>
   <div class="control-panel">
 </div>
 </body>
