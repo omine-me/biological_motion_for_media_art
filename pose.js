@@ -6,7 +6,8 @@ const canvasCtx = canvasElement.getContext('2d');
 // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
 // const grid = new LandmarkGrid(landmarkContainer);
 let isVideoOn = true;
-let areConnectorsVisible = true;
+let areConnectorsVisible = false;
+let selectedLandmarks = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]
 
 function toggleVideo() {
     isVideoOn = !isVideoOn;
@@ -14,6 +15,14 @@ function toggleVideo() {
 
 function toggleConnector() {
     areConnectorsVisible = !areConnectorsVisible;
+}
+function toggleLandmark(idx){
+    if (selectedLandmarks.includes(idx)){
+        selectedLandmarks = selectedLandmarks.filter(elem => elem != idx)
+    }else{
+        selectedLandmarks.push(idx)
+    }
+    
 }
 
 function onResults(results) {
@@ -43,7 +52,7 @@ function onResults(results) {
         results.image, 0, 0, canvasElement.width, canvasElement.height);
   }
 
-  const selectedLandmarks = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]
+  
   if (results.poseLandmarks){
   results.poseLandmarks.forEach((lm, idx) => {
     if (!selectedLandmarks.includes(idx)){
