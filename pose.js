@@ -115,21 +115,21 @@ new controls
             // source changes.
             pose.reset();
         },
-        onFrame: async (input, size) => {
-            const aspect = size.height / size.width;
-            let width, height;
-            if (window.innerWidth > window.innerHeight) {
-                height = window.innerHeight;
-                width = height / aspect;
-            }
-            else {
-                width = window.innerWidth;
-                height = width * aspect;
-            }
-            canvasElement.width = width;
-            canvasElement.height = height;
-            await pose.send({ image: input });
-        },
+//         onFrame: async (input, size) => {
+//             const aspect = size.height / size.width;
+//             let width, height;
+//             if (window.innerWidth > window.innerHeight) {
+//                 height = window.innerHeight;
+//                 width = height / aspect;
+//             }
+//             else {
+//                 width = window.innerWidth;
+//                 height = width * aspect;
+//             }
+//             canvasElement.width = width;
+//             canvasElement.height = height;
+//             await pose.send({ image: input });
+//         },
     }),
     new controls.Slider({
         title: 'Model Complexity',
