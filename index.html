@@ -5,22 +5,31 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.css" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-  <p>Settings below the video / ビデオの下に各種設定があります</p>
   <div class="container">
     <video class="input_video" style="display: none;"></video>
+    <video autoplay loop id="background_video" style="display: none;" class="background_video"></video>
+    <video autoplay loop id="video_video" style="display: none;" class="background_video"></video>
     <canvas class="output_canvas" width="1280px" height="720px" style="border:3px solid"></canvas>
     <!-- <div class="landmark-grid-container"></div> -->
   </div>
-  <input type="checkbox" id="isVideoOn" onchange="toggleVideo()" checked ><label for="isVideoOn">Is video on / ビデオオン</label>
+  <input type="checkbox" id="isVideoOn" onchange="toggleVideo()" checked ><label for="isVideoOn">Show video / ビデオオン</label><br>
+  &emsp;<input type="radio" id="video_source_camera" name="video_source" value="camera" checked>Use camera<br>
+  &emsp;<input type="radio" id="video_source_video" name="video_source" value="video" disabled>Use video <span id="video_warn">(Choose file first→)</span><input id="video_input" type="file" accept="video/*" onchange="toggle_radio_button_disable()"/>
+  <br>
+  <br>
+  <input type="checkbox" id="isBGVideoOn" onchange="toggleBGVideo()"><label for="isBGVideoOn">Show background video / 背景ビデオオン</label>
+  <input id="bg_video_input" type="file" accept="video/*" />
+  <br>
+  <br>
   <input type="checkbox" id="areConnectorsVisible" onchange="toggleConnector()" ><label for="areConnectorsVisible">Are Connectors Visible / ラインを表示</label>
   <br>
-  <p>point visibility / 点の表示</p>
+  point visibility / 点の表示
   <input type="checkbox" id="head" onchange="toggleLandmark(0)" checked><label for="head">head</label>
   <br>
 
